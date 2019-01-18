@@ -13,7 +13,7 @@ parmName2fileName <- function(parmName) {
 
 
   # Parameters inside .hru files:
-  hruParms <- C("HRU_FR", "SLSUBBSN", "HRU_SLP", "OV_N",
+  hruParms <- c("HRU_FR", "SLSUBBSN", "HRU_SLP", "OV_N",
                 "LAT_TTIME", "LAT_SED", "SLSOIL", "CANMX",
                 "ESCO", "EPCO", "RSDIN", "ERORGN",
                 "ERORGP", "POT_FR", "FLD_FR", "RIP_FR",
