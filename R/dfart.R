@@ -8,16 +8,11 @@ aggregate(x = subset(x = myDF,select = c("Income")),
           FUN = function(x) sum(x))
 
 
-names1 = list("hru"=c("f1","f2","f3"), "gw"=c("g1","g2","g3","g4"))
+a <- unlist(A)
+a_elm <- names(a[1])
+my_pat <- ".low"
 
-x_list = list()
-parmList = list()
-
-for (catg in names(names1)) {
-  x_list[[catg]] = 5
-}
-
-
+a_split = strsplit(x = a_elm,split = my_pat)
 
 
 

@@ -1,9 +1,9 @@
 
 
-genInput <- function(projectPath) {
+genParmRange <- function(projectPath) {
 
   # Generating file indices from project directory
-  projectPath <- "/home/mk/Documents/swat_sens/SWAT/TxtInOut"
+  # projectPath <- "/home/mk/Documents/swat_sens/SWAT/TxtInOut"
   fileNames <- list.files(projectPath)
   fileIndices <- c()
   for (fileName in fileNames) {
@@ -29,7 +29,7 @@ genInput <- function(projectPath) {
   }
   # Generating input list containing SWAT parameters
   # list level -1
-  rangeList = list(low=0, up=12)
+  rangeList = list(low=NA, up=NA)
 
   catgs <- list("hru" = kHruParmNames,
                 "mgt" = kMgtParmNames,
