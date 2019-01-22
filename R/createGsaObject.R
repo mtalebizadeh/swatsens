@@ -24,7 +24,7 @@ createGsaObject <- function(parmRange, gsaType, ...) {
   parmRange$mgt$NMGT$Idx_1_1$up = 44
 
   parmRange$gw$GW_DELAY$Idx_1_1$low = 40
-  parmRange$gw$GW_DELAY$Idx_1_1$up = 40
+  parmRange$gw$GW_DELAY$Idx_1_1$up = 45
 
   # Extracting uncertain parameter names
   parmRangeVector <- unlist(parmRange)
@@ -39,6 +39,8 @@ createGsaObject <- function(parmRange, gsaType, ...) {
     if (!is.na(lowerLimit) &&
         !is.na(upperLimit)) {
       if (upperLimit > lowerLimit) {
+        names(lowerLimit) <- parmName
+        names(upperLimit) <- parmName
         lowerLimits <- c(lowerLimits, lowerLimit)
         upperLimits <- c(upperLimits, upperLimit)
       } else {
@@ -50,6 +52,19 @@ createGsaObject <- function(parmRange, gsaType, ...) {
       }
     }
   }
+
+  # Use lower, upper, and default values (accessed using readParm function)
+  #
+
+
+
+
+
+
+
+
+
+
 }
 
 
