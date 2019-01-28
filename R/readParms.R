@@ -1,6 +1,6 @@
 
 
-readParms <- function(parmNames, prjFolderPath) {
+readParms <- function(parmNames, projectPath) {
   # Reads parameter value from SWAT input files.
   #
   # Args:
@@ -9,10 +9,11 @@ readParms <- function(parmNames, prjFolderPath) {
   # Returns:
   #   A named vector of numbers containing SWAT parameter values
 
-  parmNames <- c("hru.HRU_FR.Idx_1_1", "hru.SLSUBBSN.Idx_1_1",
-                 "mgt.NMGT.Idx_1_1", "mgt.IGRO.Idx_1_1",
-                 "gw.GW_DELAY.Idx_1_1", "gw.SHALLST.Idx_1_1")
-  prjFolderPath <- "/home/mk/Documents/swat_sens/SWAT/TxtInOut"
+  # parmNames <- c("hru.HRU_FR.Idx_1_1", "hru.SLSUBBSN.Idx_1_1",
+  #                "mgt.NMGT.Idx_1_1", "mgt.IGRO.Idx_1_1",
+  #                "gw.GW_DELAY.Idx_1_1", "gw.SHALLST.Idx_1_1")
+  #
+  # projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
 
 
   parmFileNames <- c()
@@ -28,7 +29,7 @@ readParms <- function(parmNames, prjFolderPath) {
                                f = fileAndParmNames[["parmFileNames"]])
   parmValues <- c()
   for (parmFileName in names(grpFileAndParmNames) ) {
-    con <- file(file.path(prjFolderPath, parmFileName))
+    con <- file(file.path(projectPath, parmFileName))
     fileLines <- readLines(con)
     for (parmName in grpFileAndParmNames[[parmFileName]]) {
       parmNameInSWAT <- unlist(strsplit(parmName, "[.]"))[2]

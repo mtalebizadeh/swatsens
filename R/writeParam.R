@@ -1,6 +1,6 @@
 
 
-writeParam <- function(txtInOut, parmVector) {
+writeParam <- function(runPrjPath, parmVector) {
 
 
 

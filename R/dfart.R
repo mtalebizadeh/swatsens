@@ -8,12 +8,34 @@ aggregate(x = subset(x = myDF,select = c("Income")),
           FUN = function(x) sum(x))
 
 
-a <- unlist(A)
-a_elm <- names(a[1])
-my_pat <- ".low"
+projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
 
-a_split = strsplit(x = a_elm,split = my_pat)
+a <- genParmRange(projectPath)
+parmNameInSWAT <- "SHALLST"
+parmRangeList <- setInAllHrus(parmRangeList = a,
+             parmNameInSWAT = parmNameInSWAT,
+             low = 0,
+             up = 5)
 
+# testing createGsaObject:
+projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
+parmRange <- genParmRange(projectPath)
+gsaType <- "FaSt"
+parmRange$hru$HRU_FR$Idx_1_1$low = 0.1
+parmRange$hru$HRU_FR$Idx_1_1$up = 0.3
+
+parmRange$mgt$NMGT$Idx_1_1$low = -0.01
+parmRange$mgt$NMGT$Idx_1_1$up = 0.2
+
+parmRange$gw$GW_DELAY$Idx_1_1$low = -0.02
+parmRange$gw$GW_DELAY$Idx_1_1$up = 0.02
+
+
+GSA <- createGsaObject(parmRange = parmRange,
+                       gsaType = gsaType,
+                       rangeType = "rel")
+
+X <- GSA$X
 
 
 

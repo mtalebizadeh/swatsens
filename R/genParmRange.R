@@ -49,5 +49,6 @@ genParmRange <- function(projectPath) {
       }
     }
   }
+  input$projectPath <- projectPath
   input
 }
