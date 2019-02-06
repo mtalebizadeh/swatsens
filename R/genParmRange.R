@@ -3,20 +3,29 @@
 genParmRange <- function(projectPath) {
 
   # Generating file indices from project directory
-  # projectPath <- "/home/mk/Documents/swat_sens/SWAT/TxtInOut"
-  fileNames <- list.files(projectPath)
-  fileIndices <- c()
-  for (fileName in fileNames) {
-    if (endsWith(fileName, ".gw") &&
-        !startsWith(fileName,"output")) {
+  # projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
 
+  # Default parameter range:
+  rangeList = list(low=NA, up=NA)
+
+  # HRU-level parameters inside .hru, .mgt, .gw, .sol files
+  catgs <- list("hru" = kHruParmNames,
+                "mgt" = kMgtParmNames,
+                "gw"  = kGwParmNames,
+                "sol" = kSolParmNames)
+
+  input = list()
+  hruLevelFileNames <- list.files(path = projectPath,
+                             pattern = "[0-9]+([.]gw)$")
+  fileIndices <- c()
+  for (hruLevelFileName in hruLevelFileNames) {
       subasinNum <- sub(pattern = "[0]+",
                         replacement = "",
-                        x = substr(fileName, 1,5))
+                        x = substr(hruLevelFileName, 1,5))
 
       hruNum <- sub(pattern = "[0]+",
                     replacement = "",
-                    x = substr(fileName, 6,9))
+                    x = substr(hruLevelFileName, 6,9))
 
       fileIndices <- c(fileIndices,
                        paste("Idx_",
@@ -24,19 +33,9 @@ genParmRange <- function(projectPath) {
                              "_",
                              hruNum,
                              sep = ""))
-    }
   }
-  # Generating input list containing SWAT parameters
-  # list level -1
-  rangeList = list(low=NA, up=NA)
 
-  catgs <- list("hru" = kHruParmNames,
-                "mgt" = kMgtParmNames,
-                "gw"  =  kGwParmNames,
-                "sol" = kSolParmNames)
-  input = list()
   for (catg in names(catgs)) {
-
     catgList = list()
     for (parmName in catgs[[catg]]) {
 
@@ -49,6 +48,52 @@ genParmRange <- function(projectPath) {
       }
     }
   }
+
+  # Subbasin-level parameters inside .sub, .rte
+  subasinLevelCatgs <- list("sub" = kSubParmNames,
+                            "rte" = kRteParmNames)
+
+  rteFileNames <- list.files(path = projectPath,
+                             pattern = "[0-9]+([.]rte)$")
+  subasinIndices <- c()
+  for (rteFileName in rteFileNames) {
+
+      subasinNum <- sub(pattern = "[0]+",
+                        replacement = "",
+                        x = substr(rteFileName, 1,5))
+
+      subasinIndices <- c(subasinIndices,
+                           paste("Sub_",
+                                 subasinNum,
+                                 sep = ""))
+    }
+
+  for (subasinLevelCatg in names(subasinLevelCatgs)) {
+
+    subasinLevelParmList <- list()
+    for (subasinLevelParmName in subasinLevelCatgs[[subasinLevelCatg]]) {
+      subasinIndicesList <- list()
+      for (subasinIndex in subasinIndices) {
+        subasinIndicesList[[subasinIndex]] <- rangeList
+        subasinLevelParmList[[subasinLevelParmName]] <- subasinIndicesList
+      }
+      input[[subasinLevelCatg]] <- subasinLevelParmList
+    }
+  }
+
+  # Global parameters inside .bsn, .wwq, plant.dat
+  globalCatgs <- list("plant" = kPlantParmNames,
+                      "wwq"   = kWwqParmNames,
+                      "bsn"   = kBsnParmNames)
+
+  for (globalCatg in names(globalCatgs)) {
+    globalParmList <- list()
+    for (globalParm in globalCatgs[[globalCatg]]) {
+      globalParmList[[globalParm]] <- rangeList
+    }
+    input[[globalCatg]] <- globalParmList
+  }
+
   input$projectPath <- projectPath
   input
 }

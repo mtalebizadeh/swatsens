@@ -35,7 +35,12 @@ GSA <- createGsaObject(parmRange = parmRange,
                        gsaType = gsaType,
                        rangeType = "rel")
 
-X <- GSA$X
+
+
+
+
+
+
 
 
 
