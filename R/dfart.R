@@ -8,9 +8,9 @@ aggregate(x = subset(x = myDF,select = c("Income")),
           FUN = function(x) sum(x))
 
 
-projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
+projectPath <- "/home/mk/Documents/swat_sens/SWAT/TxtInOut"
 
-a <- genParmRange(projectPath)
+A <- genParmRange(projectPath)
 parmNameInSWAT <- "SHALLST"
 parmRangeList <- setInAllHrus(parmRangeList = a,
              parmNameInSWAT = parmNameInSWAT,
@@ -36,6 +36,10 @@ GSA <- createGsaObject(parmRange = parmRange,
                        rangeType = "rel")
 
 
+str_test <- "ddd WWSS SFFome other info"
+pattern <- "[A-Z]+"
+
+aa <- regmatches(x = str_test,m = regexpr(pattern = pattern,text = str_test))
 
 
 

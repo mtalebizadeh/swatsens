@@ -81,9 +81,8 @@ genParmRange <- function(projectPath) {
     }
   }
 
-  # Global parameters inside .bsn, .wwq, plant.dat
-  globalCatgs <- list("plant" = kPlantParmNames,
-                      "wwq"   = kWwqParmNames,
+  # Global parameters inside .bsn, .wwq files
+  globalCatgs <- list("wwq"   = kWwqParmNames,
                       "bsn"   = kBsnParmNames)
 
   for (globalCatg in names(globalCatgs)) {
@@ -94,6 +93,29 @@ genParmRange <- function(projectPath) {
     input[[globalCatg]] <- globalParmList
   }
 
+  # Global plant parameters inside plant.dat
+  plantTypes <- c()
+  for (hruLevelFileName in hruLevelFileNames) {
+    con <- file(file.path(projectPath, hruLevelFileName))
+    firstLineInFile <- readLines(con)[1]
+    firstLineSplit <-  unlist(strsplit(firstLineInFile, split = "Luse:"))[2]
+    landUse <- regmatches(x = firstLineSplit,
+                          m = regexpr(pattern = "[A-Z]+",
+                                      text    = firstLineSplit))
+    plantTypes <- c(plantTypes, landUse)
+    close(con)
+  }
+  plantTypes <- unique(plantTypes)
+
+  plant <- list()
+  for (plantType in plantTypes) {
+    plantTypeList <- list()
+    for (kPlantParmName in kPlantParmNames) {
+      plantTypeList[[kPlantParmName]] <- rangeList
+    }
+    plant[[plantType]] <- plantTypeList
+  }
+  input[["plant"]] <- plant
   input$projectPath <- projectPath
   input
 }
