@@ -5,19 +5,70 @@ getParmFileName <- function(parmName) {
   # Returns file name in SWAT
 
   #parmName <- "sol.HRU_FR.Idx_10_4"
-  splitParmName <- unlist(strsplit(parmName, "[.]"))
-  if (length(splitParmName) == 3) {
-    inputFileSuffix <- paste(".", splitParmName[1], sep="")
-    parmNameInSWAT <- splitParmName[2]
-    subasinAndHruNumber <- strtoi(unlist(strsplit(splitParmName[3], "[_]")))
-    subasinFormatString <- "%05d"
-    hruFromatString <- "%04d"
-    subasinLabel <- sprintf(fmt = subasinFormatString, subasinAndHruNumber[2])
-    hruNumLabel <- sprintf(fmt = hruFromatString, subasinAndHruNumber[3])
-    inputFileName <- paste(subasinLabel, hruNumLabel, inputFileSuffix, sep="")
+  #"sub.CH_K1.Sub_1
+  #wwq.RHOQ
+  #plant.BIO_E
 
+  if (isHruLevel(parmName) ||
+      isSubbasinLevelParm(parmName)) {
+    getHruOrSubLevelFileName(parmName)
+  } else if (isGlobalLevelParm(parmName)) {
+    getGLobalLevelFileName(parmName)
+  } else if (isPlantParm(parmName)) {
+    getPlantFileName(parmName)
   } else {
-    stop("only supports parameters in .hru, .mgt, .gw, .sol files!")
+    stop("Not a valid parameter name!")
   }
-  return(inputFileName)
 }
+
+isHruLevelParm <- function(parmName) {
+  any(
+    startsWith(parmName,
+               prefix = c("mgt", "hru", "mgt", "gw"))
+  )
+}
+
+isSubbasinLevelParm <- function(parmName) {
+  any(
+    startsWith(parmName,
+               prefix = c("sub", "rte"))
+  )
+}
+
+isGlobalLevelParm <- function(parmName) {
+  any(startsWith(parmName,
+                 prefix = c("wwq", "bsn"))
+  )
+}
+
+isPlantParm <- function(parmName) {
+  startsWith(parmName,
+             prefix = "plant")
+}
+
+getHruOrSubLevelFileName <- function(parmName) {
+  splitParmName <- unlist(strsplit(parmName, "[.]"))
+  inputFileSuffix <- paste(".", splitParmName[1], sep="")
+  parmNameInSWAT <- splitParmName[2]
+  subasinAndHruNumber <- strtoi(unlist(strsplit(splitParmName[3], "[_]")))
+  subasinFormatString <- "%05d"
+  hruFromatString <- "%04d"
+  subasinLabel <- sprintf(fmt = subasinFormatString, subasinAndHruNumber[2])
+  if (isSubbasinLevelParm(parmName)) {
+    hruNumLabel <- "0000"
+  } else {
+    hruNumLabel = sprintf(fmt = hruFromatString, subasinAndHruNumber[3])
+  }
+
+  hruOrSubLevelFileName <- paste(subasinLabel, hruNumLabel, inputFileSuffix, sep="")
+}
+
+getGLobalLevelFileName <- function(parmName) {
+  inputFileSuffix <- unlist(strsplit(parmName, "[.]"))[1]
+  globalLevelFileName <- paste("basins","inputFileSuffix", sep = "")
+}
+
+getPlantFileName <- function(parmName) {
+  plantFileName <- "plant.dat"
+}
+

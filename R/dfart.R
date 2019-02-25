@@ -42,8 +42,13 @@ pattern <- "[A-Z]+"
 aa <- regmatches(x = str_test,m = regexpr(pattern = pattern,text = str_test))
 
 
+parmNames <- names(unlist(parmRange))
+parmName = parmNames[startsWith(parmNames,"hru")][1000]
 
 
+fileName = getParmFileName(parmName)
+fileName
+parmName
 
 
 
