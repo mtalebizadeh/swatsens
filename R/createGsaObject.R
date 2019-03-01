@@ -65,9 +65,9 @@ createGsaObject <- function(parmRange, gsaType, rangeType = "rel", ...) {
   if (rangeType == "rel") {
     for (parmName in names(lowerLimits)) {
       lowerLimits[parmName] <- (lowerLimits[parmName] + 1) *
-                                readParms(parmName, parmRange$projectPath)
+                                getParmValues(parmName, parmRange$projectPath)
       upperLimits[parmName] <- (upperLimits[parmName] + 1) *
-                                readParms(parmName, parmRange$projectPath)
+                                getParmValues(parmName, parmRange$projectPath)
       }
   }
 

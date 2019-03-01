@@ -42,8 +42,8 @@ isGlobalLevelParm <- function(parmName) {
 }
 
 isPlantParm <- function(parmName) {
-  startsWith(parmName,
-             prefix = "plant")
+    grepl(pattern = "[(.BIO_E)(.USLE_C)]",
+          x = parmName)
 }
 
 getHruOrSubLevelFileName <- function(parmName) {
