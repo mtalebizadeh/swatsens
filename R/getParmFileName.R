@@ -9,7 +9,7 @@ getParmFileName <- function(parmName) {
   #wwq.RHOQ
   #plant.BIO_E
 
-  if (isHruLevel(parmName) ||
+  if (isHruLevelParm(parmName) ||
       isSubbasinLevelParm(parmName)) {
     getHruOrSubLevelFileName(parmName)
   } else if (isGlobalLevelParm(parmName)) {
@@ -42,8 +42,8 @@ isGlobalLevelParm <- function(parmName) {
 }
 
 isPlantParm <- function(parmName) {
-    grepl(pattern = "[(.BIO_E)(.USLE_C)]",
-          x = parmName)
+  startsWith(parmName,
+                 prefix = "plant")
 }
 
 getHruOrSubLevelFileName <- function(parmName) {
@@ -65,7 +65,7 @@ getHruOrSubLevelFileName <- function(parmName) {
 
 getGLobalLevelFileName <- function(parmName) {
   inputFileSuffix <- unlist(strsplit(parmName, "[.]"))[1]
-  globalLevelFileName <- paste("basins","inputFileSuffix", sep = "")
+  globalLevelFileName <- paste("basins", ".", inputFileSuffix, sep = "")
 }
 
 getPlantFileName <- function(parmName) {
