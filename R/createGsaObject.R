@@ -15,23 +15,6 @@ createGsaObject <- function(parmRange, gsaType, rangeType = "rel", ...) {
   # Returns:
   #   A GSA object containing parameter samples and sensitivity analysis setting.
 
-  # projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
-  # parmRange <- genParmRange(projectPath)
-  # gsaType <- "morris"
-  # parmRange$hru$HRU_FR$Idx_1_1$low = 0
-  # parmRange$hru$HRU_FR$Idx_1_1$up = 34
-  #
-  # parmRange$mgt$NMGT$Idx_1_1$low = 6
-  # parmRange$mgt$NMGT$Idx_1_1$up = 44
-  #
-  # parmRange$gw$GW_DELAY$Idx_1_1$low = 40
-  # parmRange$gw$GW_DELAY$Idx_1_1$up = 45
-  #
-  # projectPath <- parmRange$projectPath
-
-
-
-
   # Extracting uncertain parameter name
   parmRangeInHrus <- parmRange[!(names(parmRange) %in% c("projectPath"))] # removes projectPath
   parmRangeVector <- unlist(parmRangeInHrus)
@@ -145,7 +128,6 @@ createGsaObject <- function(parmRange, gsaType, rangeType = "rel", ...) {
   }
 
   return(gsaObject)
-
 }
 
 

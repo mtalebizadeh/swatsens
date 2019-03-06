@@ -29,11 +29,21 @@ isHruLevelParm <- function(parmName) {
 }
 
 isSubbasinLevelParm <- function(parmName) {
-  any(
-    startsWith(parmName,
-               prefix = c("sub", "rte"))
-  )
+  any(isSubParm(parmName),
+      isRteParm(parmName)
+      )
 }
+
+isSubParm <- function(parmName) {
+  startsWith(x = parmName, prefix = "sub")
+}
+
+isRteParm <- function(parmName) {
+  startsWith(x = parmName, prefix = "rte")
+}
+
+
+
 
 isGlobalLevelParm <- function(parmName) {
   any(startsWith(parmName,
