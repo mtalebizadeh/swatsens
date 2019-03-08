@@ -122,13 +122,3 @@ getTargetNonPlantParmLineIndex <- function(fileLines, parmName) {
   targetParmLineIndex <- grep(pattern = parmNameInSWAT, fileLines)
   targetParmLineIndex
 }
-
-
-
-
-
-
-
-
-
-

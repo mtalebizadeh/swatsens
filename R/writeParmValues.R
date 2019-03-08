@@ -62,12 +62,3 @@ getParmFormatString <- function(parmName) {
     kParmName2FormatStringMap[parmNameInSWAT]
   }
 }
-
-
-
-
-
-
-
-
-

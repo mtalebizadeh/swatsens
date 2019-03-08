@@ -2,7 +2,7 @@
 # testing createGsaObject:
 projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
 parmRange <- genParmRange(projectPath)
-gsaType <- "FaSt"
+gsaType <- "Morris"
 parmRange$hru$HRU_FR$Idx_1_1$low = 0.1
 parmRange$hru$HRU_FR$Idx_1_1$up = 0.3
 
@@ -12,19 +12,32 @@ parmRange$mgt$NMGT$Idx_1_1$up = 0.2
 parmRange$gw$GW_DELAY$Idx_1_1$low = -0.02
 parmRange$gw$GW_DELAY$Idx_1_1$up = 0.02
 
+parmRange$rte$SPEX$Sub_1$low= -0.02
+parmRange$rte$SPEX$Sub_1$up = 0.02
+
+parmRange$bsn$P_UPDIS$low = -0.02
+parmRange$bsn$P_UPDIS$up = 0.02
+
+parmRange$wwq$RHOQ$low = -0.2
+parmRange$wwq$RHOQ$up = 0.2
+
+parmRange$plant$FRST$BIO_E$low = -0.2
+parmRange$plant$FRST$BIO_E$up = 0.2
+
 
 GSA <- createGsaObject(parmRange = parmRange,
                        gsaType = gsaType,
                        rangeType = "rel")
 
+A <- GSA$X
 
+
+#######################
+# Testing regmatches ...
 str_test <- "ddd WWSS SFFome other info"
 pattern <- "[A-Z]+"
 
 aa <- regmatches(x = str_test,m = regexpr(pattern = pattern,text = str_test))
-
-#######################
-
 
 ######################
 # Testing getParmValueFromFileLines
@@ -62,6 +75,21 @@ parmValues <- c("hru.OV_N.Idx_1_1" = 0.555 , "hru.SLSUBBSN.Idx_1_1" = 80.80,
                )
 projectPath <- "E:/Sensitivity_Projects/SWATExp/TestPrj/TxtInOut"
 writeParmValues(parmValues = parmValues,projectPath = projectPath)
+
+
+
+
+####
+# Important base functions
+# assign()
+# substitute()
+# parent.frame()
+# match.call()
+# do.call()
+# deparse()
+# args()
+# quote()
+# expression()
 
 
 

@@ -15,17 +15,130 @@ createGsaObject <- function(parmRange, gsaType, rangeType = "rel", ...) {
   # Returns:
   #   A GSA object containing parameter samples and sensitivity analysis setting.
 
-  # Extracting uncertain parameter name
-  parmRangeInHrus <- parmRange[!(names(parmRange) %in% c("projectPath"))] # removes projectPath
-  parmRangeVector <- unlist(parmRangeInHrus)
-  parmNames <- names(parmRangeVector)[endsWith(names(parmRangeVector),
-                                               ".low")]
-  parmNames <- unlist(strsplit(parmNames, ".low"))
+  uncertaintyLimits <- getUncertaintyLimits(parmRange)
+
+  SA.Parms <- list(...)
+  SA.ParmNames <- names(SA.Parms)
+  if (tolower(gsaType) == "src" ||
+      tolower(gsaType) == "srrc") {
+    gsaObject <- createSrcGsaObject(uncertaintyLimits, SA.Parms)
+  } else if (tolower(gsaType) == "morris") {
+    gsaObject <- createMorrisGsaObject(uncertaintyLimits, SA.Parms)
+  } else if (tolower(gsaType) == "fast") {
+    gsaObject <- createFastGsaObject(uncertaintyLimits, SA.Parms)
+  } else {
+    stop("Not a valid sensitivity analysis method!")
+  }
+  return(gsaObject)
+}
+
+createSrcGsaObject <- function(uncertaintyLimits, SA.Parms) {
+
+  SA.ParmNames <- names(SA.Parms)
+  if ("n" %in% SA.ParmNames) {
+    n <- SA.Parms[["n"]]
+  } else {
+    n <- 1000
+    warning(paste(
+      "Default value of 1000 is used as sample number!\n",
+      "To use a different number (e.g. 2000) set n=2000"))
+  }
+  lowerLimits <- uncertaintyLimits[["lowerLimits"]]
+  upperLimits <- uncertaintyLimits[["upperLimits"]]
+  parmSamples <- as.data.frame(
+    matrix(ncol = length(lowerLimits),
+    nrow = n))
+
+  sampledParmNames <- names(lowerLimits)
+  names(parmSamples) <- sampledParmNames
+  for (sampledParmName in sampledParmNames) {
+    parmSamples[[sampledParmName]] <- runif(
+      n,
+      min = lowerLimits[sampledParmName],
+      max = upperLimits[sampledParmName]
+    )
+  }
+  gsaObject <- list(X = parmSamples)
+  return(gsaObject)
+}
+
+createMorrisGsaObject <- function(uncertaintyLimits, SA.Parms) {
+
+  SA.ParmNames <- names(SA.Parms)
+  if ("r" %in% SA.ParmNames) {
+    r <- SA.Parms[["r"]]
+  } else {
+    r <- 15
+  }
+  if ("levels" %in% SA.ParmNames) {
+    levels <- SA.Parms[["levels"]]
+  } else {
+    levels <- 8
+  }
+  lowerLimits <- uncertaintyLimits[["lowerLimits"]]
+  upperLimits <- uncertaintyLimits[["upperLimits"]]
+  gsaObject <- sensitivity::morris(
+    model = NULL,
+    factors = names(lowerLimits),
+    r = r,
+    design = list(type = "oat",
+    levels = levels,
+    grid.jump = 1),
+    binf = lowerLimits,
+    bsup = upperLimits,
+    scale = TRUE)
+
+  gsaObject$X <- as.data.frame(gsaObject$X)
+  return(gsaObject)
+}
+
+createFastGsaObject <- function(uncertaintyLimits, SA.Parms) {
+
+  SA.ParmNames <- names(SA.Parms)
+  if ("n" %in% SA.ParmNames) {
+    n <- SA.Parms[["n"]]
+  } else {
+    n <- 500
+    warning(
+      paste("Default value of 500 is used as sample number!\n",
+            "To use a different number (e.g. 1000) set n=1000"))
+  }
+  lowerLimits <- uncertaintyLimits[["lowerLimits"]]
+  upperLimits <- uncertaintyLimits[["upperLimits"]]
+  limitList <- list()
+  for (parmName in names(lowerLimits)) {
+    limitList[[parmName]] <- list(
+      min = lowerLimits[parmName],
+      max = upperLimits[parmName])
+  }
+
+  gsaObject <- sensitivity::fast99(
+    model = NULL,
+    factors = names(lowerLimits),
+    n = n,
+    M = 4,
+    q = rep("qunif", length(lowerLimits)),
+    q.arg = limitList)
+  return(gsaObject)
+}
+
+getUncertaintyLimits <- function(parmRange, rangeType = "rel") {
+  # Gets lower and upper uncertainty limits.
+  #
+  # Args:
+  #   Input template (output of 'getParmRange' function).
+  #   rangeType: "rel" or "abs" for relative and absolute, respectively.
+  #
+  # Returns: A named list object containing lower and upper limits.
+
+  parmNames <- getUncertainParmNames(parmRange)
   lowerLimits <- c()
   upperLimits <- c()
   for (parmName in parmNames) {
-    lowerLimit <- parmRangeVector[paste(parmName, ".low", sep = "")]
-    upperLimit <- parmRangeVector[paste(parmName, ".up" , sep = "")]
+    lowerLimit <- parmRangeVector[
+      paste(parmName, ".low", sep = "")]
+    upperLimit <- parmRangeVector[
+      paste(parmName, ".up" , sep = "")]
     if (!is.na(lowerLimit) &&
         !is.na(upperLimit)) {
       if (upperLimit > lowerLimit) {
@@ -34,105 +147,36 @@ createGsaObject <- function(parmRange, gsaType, rangeType = "rel", ...) {
         lowerLimits <- c(lowerLimits, lowerLimit)
         upperLimits <- c(upperLimits, upperLimit)
       } else {
-        stop(paste("Upper limit should always be larger than the lower limit!\n"),
-                   "Please correct the limits of ",
-                    parmName,
-                    " parameter.",
-                    sep = "")
+        stop(
+          paste(
+            "Upper limit should always be larger than the lower limit!\n"),
+            "Please correct the limits of ",
+             parmName,
+             " parameter.",
+             sep = "")
       }
     }
   }
 
-  # Use lower, upper, and default values (accessed using readParm function)
-  # Multiplying lower and upper fractions to calculate lower and upper limits
   if (rangeType == "rel") {
     for (parmName in names(lowerLimits)) {
       lowerLimits[parmName] <- (lowerLimits[parmName] + 1) *
-                                getParmValues(parmName, parmRange$projectPath)
+        getParmValues(parmName, parmRange$projectPath)
       upperLimits[parmName] <- (upperLimits[parmName] + 1) *
-                                getParmValues(parmName, parmRange$projectPath)
-      }
+        getParmValues(parmName, parmRange$projectPath)
+    }
   }
-
-  SA.Parms <- list(...)
-  #SA.Parms <- list()
-
-  SA.ParmNames <- names(SA.Parms)
-  if (tolower(gsaType) == "src" ||
-      tolower(gsaType) == "srrc") {
-
-    if ("n" %in% SA.ParmNames) {
-      n <- SA.Parms[["n"]]
-    } else {
-        n <- 1000
-        warning(paste("Default value of 1000 is used as sample number!\n",
-                      "To use a different number (e.g. 2000) set n=2000"))
-    }
-
-    parmSamples <- as.data.frame(matrix(ncol = length(lowerLimits),
-                                        nrow = n))
-    sampledParmNames <- names(lowerLimits)
-    names(parmSamples) <- sampledParmNames
-    for (sampledParmName in sampledParmNames) {
-      parmSamples[[sampledParmName]] <- runif(n,
-                                              min = lowerLimits[sampledParmName],
-                                              max = upperLimits[sampledParmName]
-                                              )
-    }
-    gsaObject <- list(X = parmSamples)
-
-  } else if (tolower(gsaType) == "morris") {
-    if ("r" %in% SA.ParmNames) {
-      r <- SA.Parms[["r"]]
-    } else {
-      r <- 15
-    }
-    if ("levels" %in% SA.ParmNames) {
-      levels <- SA.Parms[["levels"]]
-    } else {
-      levels <- 8
-    }
-    gsaObject <- sensitivity::morris(model = NULL,
-                                     factors = names(lowerLimits),
-                                     r = r,
-                                     design = list(type = "oat",
-                                                   levels = levels,
-                                                   grid.jump = 1),
-                                     binf = lowerLimits,
-                                     bsup = upperLimits,
-                                     scale = TRUE)
-
-    gsaObject$X <- as.data.frame(gsaObject$X)
-
-  } else if (tolower(gsaType) == "fast") {
-    if ("n" %in% SA.ParmNames) {
-      n <- SA.Parms[["n"]]
-    } else {
-      n <- 500
-      warning(paste("Default value of 500 is used as sample number!\n",
-                    "To use a different number (e.g. 1000) set n=1000"))
-    }
-
-    limitList <- list()
-    for (parmName in names(lowerLimits)) {
-      limitList[[parmName]] <- list(min = lowerLimits[parmName],
-                                    max = upperLimits[parmName])
-    }
-
-    gsaObject <- sensitivity::fast99(model = NULL,
-                                     factors = names(lowerLimits),
-                                     n = n,
-                                     M = 4,
-                                     q = rep("qunif", length(lowerLimits)),
-                                     q.arg = limitList)
-  }
-
-  return(gsaObject)
+  uncertaintyLimits <- list(
+    lowerLimits = lowerLimits,
+    upperLimits = upperLimits)
 }
 
-
-
-
-
-
-
+getUncertainParmNames <- function(parmRange) {
+  # removing projectPath ...
+  parmRanges<- parmRange[!(names(parmRange) %in% c("projectPath"))]
+  parmRangeVector <- unlist(parmRanges)
+  parmNames <- names(parmRangeVector)[endsWith(
+    x = names(parmRangeVector),
+    suffix = ".low")]
+  parmNames <- unlist(strsplit(parmNames, ".low"))
+}
