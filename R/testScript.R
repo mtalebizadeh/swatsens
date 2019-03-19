@@ -1,8 +1,8 @@
 
 # testing createGsaObject:
-projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
+projectPath <- "E:/Sensitivity_Projects/SWATSENS/example/TxtInOut"
 parmRange <- genParmRange(projectPath)
-gsaType <- "Morris"
+gsaType <- "Morris" # Available methods are: src, srrc, morris, fast
 parmRange$hru$HRU_FR$Idx_1_1$low = 0.1
 parmRange$hru$HRU_FR$Idx_1_1$up = 0.3
 
@@ -32,22 +32,15 @@ GSA <- createGsaObject(parmRange = parmRange,
 A <- GSA$X
 
 
-#######################
-# Testing regmatches ...
-str_test <- "ddd WWSS SFFome other info"
-pattern <- "[A-Z]+"
-
-aa <- regmatches(x = str_test,m = regexpr(pattern = pattern,text = str_test))
-
 ######################
-# Testing getParmValueFromFileLines
-con = file("E:/Sensitivity_Projects/SWATExp/example/TxtInOut/plant.dat")
+# Testing getParmValueFromFileLines (reads parm value from a single file)
+con = file("E:/Sensitivity_Projects/SWATSENS/example/TxtInOut/plant.dat")
 fileLines <- readLines(con)
-parmName <- "plant.OATS.USLE_C"
+parmName <- "plant.OATS.USLE_C" #Parm name according to SWATSENS
 getParmValueFromFileLines(fileLines, parmName)
 close(con)
 ###################
-# Testing getParmValues
+# Testing getParmValues (read values from a vector of parm files!)
 parmNames <- c("hru.HRU_FR.Idx_1_1", "hru.SLSUBBSN.Idx_1_1",
                  "mgt.NMGT.Idx_1_1", "mgt.IGRO.Idx_1_1",
                  "gw.GW_DELAY.Idx_1_1", "gw.SHALLST.Idx_1_1",
@@ -55,14 +48,10 @@ parmNames <- c("hru.HRU_FR.Idx_1_1", "hru.SLSUBBSN.Idx_1_1",
                   "sub.CH_K1.Sub_2","rte.SPCON.Sub_4",
                   "bsn.P_UPDIS", "wwq.RHOQ"
                    )
-projectPath <- "E:/Sensitivity_Projects/SWATExp/example/TxtInOut"
+
+projectPath <- "E:/Sensitivity_Projects/SWATSENS/example/TxtInOut"
 getParmValues(parmNames, projectPath)
 ######################
-# Testing writeLines
-filePath <- "E:/Sensitivity_Projects/SWATExp/TEST_Writelines/output.txt"
-con <- file(filePath)
-writeLines(sprintf("%16.4f",52.36), con)
-close(con)
 #######
 # Testing writeParmValues function
 parmValues <- c("hru.OV_N.Idx_1_1" = 0.555 , "hru.SLSUBBSN.Idx_1_1" = 80.80,
@@ -73,23 +62,9 @@ parmValues <- c("hru.OV_N.Idx_1_1" = 0.555 , "hru.SLSUBBSN.Idx_1_1" = 80.80,
                "sub.CH_K1.Sub_1" = 160,"sub.CH_N1.Sub_1" = 0.99,
                "bsn.P_UPDIS" = 50 , "wwq.RHOQ" = 5
                )
-projectPath <- "E:/Sensitivity_Projects/SWATExp/TestPrj/TxtInOut"
+projectPath <- "E:/Sensitivity_Projects/SWATSENS/TestPrj/TxtInOut"
 writeParmValues(parmValues = parmValues,projectPath = projectPath)
 
-
-
-
-####
-# Important base functions
-# assign()
-# substitute()
-# parent.frame()
-# match.call()
-# do.call()
-# deparse()
-# args()
-# quote()
-# expression()
 
 
 
