@@ -53,8 +53,8 @@ createSrcGsaObject <- function(uncertaintyLimits, SA.Parms) {
   for (sampledParmName in sampledParmNames) {
     parmSamples[[sampledParmName]] <- runif(
       n,
-      min = lowerLimits[sampledParmName],
-      max = upperLimits[sampledParmName]
+      min = as.numeric(lowerLimits[sampledParmName]),
+      max = as.numeric(upperLimits[sampledParmName])
     )
   }
   gsaObject <- list(X = parmSamples)
@@ -83,8 +83,8 @@ createMorrisGsaObject <- function(uncertaintyLimits, SA.Parms) {
     design = list(type = "oat",
     levels = levels,
     grid.jump = 1),
-    binf = lowerLimits,
-    bsup = upperLimits,
+    binf = as.numeric(lowerLimits),
+    bsup = as.numeric(upperLimits),
     scale = TRUE)
 
   gsaObject$X <- as.data.frame(gsaObject$X)
@@ -107,8 +107,8 @@ createFastGsaObject <- function(uncertaintyLimits, SA.Parms) {
   limitList <- list()
   for (parmName in names(lowerLimits)) {
     limitList[[parmName]] <- list(
-      min = lowerLimits[parmName],
-      max = upperLimits[parmName])
+      min = as.numeric(lowerLimits[parmName]),
+      max = as.numeric(upperLimits[parmName]))
   }
 
   gsaObject <- sensitivity::fast99(
@@ -134,9 +134,9 @@ getUncertaintyLimits <- function(parmRange, rangeType = "rel") {
   lowerLimits <- c()
   upperLimits <- c()
   for (parmName in parmNames) {
-    lowerLimit <- parmRangeVector[
+    lowerLimit <- unlist(parmRange)[
       paste(parmName, ".low", sep = "")]
-    upperLimit <- parmRangeVector[
+    upperLimit <- unlist(parmRange)[
       paste(parmName, ".up" , sep = "")]
     if (!is.na(lowerLimit) &&
         !is.na(upperLimit)) {
@@ -159,10 +159,13 @@ getUncertaintyLimits <- function(parmRange, rangeType = "rel") {
 
   if (rangeType == "rel") {
     for (parmName in names(lowerLimits)) {
-      lowerLimits[parmName] <- (lowerLimits[parmName] + 1) *
+
+      lowerLimits[parmName] <- (as.numeric(lowerLimits[parmName]) + 1) *
         getParmValues(parmName, parmRange$projectPath)
-      upperLimits[parmName] <- (upperLimits[parmName] + 1) *
+
+      upperLimits[parmName] <- (as.numeric(upperLimits[parmName]) + 1) *
         getParmValues(parmName, parmRange$projectPath)
+
     }
   }
   uncertaintyLimits <- list(

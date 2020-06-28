@@ -1,4 +1,7 @@
 
+
+# parmRange$rte$SPEX$Sub_1$low= -0.02 # CHCECK THIS FOR BUGS! #############
+
 source('./R/genParmRange.R')
 source('./R/getParmFileName.R')
 source('./R/getParmValues.R')
@@ -12,9 +15,9 @@ library("sensitivity")
 
 
 # testing createGsaObject:
-projectPath <- "C:/Users/myAcerPC2019/Documents/SWATSENSE/model/TxtInOut/"
+projectPath <- "C:/Users/myAcerPC2019/Documents/SWATSENSE/model/TxtInOut"
 parmRange <- genParmRange(projectPath)
-gsaType <- "morris" # Available methods are: src, srrc, morris, fast
+gsaType <- "fast" # Available methods are: src, srrc, morris, fast
 parmRange$hru$HRU_FR$Idx_1_1$low = 0.1
 parmRange$hru$HRU_FR$Idx_1_1$up = 0.3
 
@@ -23,13 +26,13 @@ parmRange$mgt$NMGT$Idx_1_1$up = 0.2
 
 parmRange$gw$GW_DELAY$Idx_1_1$low = -0.02
 parmRange$gw$GW_DELAY$Idx_1_1$up = 0.02
-
-parmRange$rte$SPEX$Sub_1$low= -0.02
-parmRange$rte$SPEX$Sub_1$up = 0.02
-
+# #
+# parmRange$rte$SPEX$Sub_1$low= -0.02 # CHCECK THIS FOR BUGS!
+# parmRange$rte$SPEX$Sub_1$up = 0.02
+#
 parmRange$bsn$P_UPDIS$low = -0.02
 parmRange$bsn$P_UPDIS$up = 0.02
-
+#
 parmRange$wwq$RHOQ$low = -0.2
 parmRange$wwq$RHOQ$up = 0.2
 
