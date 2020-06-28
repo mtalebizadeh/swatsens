@@ -14,7 +14,6 @@ createGsaObject <- function(parmRange, gsaType, rangeType = "rel", ...) {
   #
   # Returns:
   #   A GSA object containing parameter samples and sensitivity analysis setting.
-
   uncertaintyLimits <- getUncertaintyLimits(parmRange)
 
   SA.Parms <- list(...)
@@ -179,4 +178,8 @@ getUncertainParmNames <- function(parmRange) {
     x = names(parmRangeVector),
     suffix = ".low")]
   parmNames <- unlist(strsplit(parmNames, ".low"))
+  return(parmNames)
 }
+
+
+

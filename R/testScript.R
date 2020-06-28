@@ -1,8 +1,20 @@
 
+source('./R/genParmRange.R')
+source('./R/getParmFileName.R')
+source('./R/getParmValues.R')
+source('./R/parmNames.R')
+source('./R/setInAllHrus.R')
+source('./R/writeParmValues.R')
+source('./R/createGsaObject.R')
+
+
+library("sensitivity")
+
+
 # testing createGsaObject:
-projectPath <- "E:/Sensitivity_Projects/SWATSENS/example/TxtInOut"
+projectPath <- "C:/Users/myAcerPC2019/Documents/SWATSENSE/model/TxtInOut/"
 parmRange <- genParmRange(projectPath)
-gsaType <- "Morris" # Available methods are: src, srrc, morris, fast
+gsaType <- "morris" # Available methods are: src, srrc, morris, fast
 parmRange$hru$HRU_FR$Idx_1_1$low = 0.1
 parmRange$hru$HRU_FR$Idx_1_1$up = 0.3
 
