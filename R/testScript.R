@@ -18,8 +18,8 @@ library("sensitivity")
 projectPath <- "C:/Users/myAcerPC2019/Documents/SWATSENSE/model/TxtInOut"
 parmRange <- genParmRange(projectPath)
 gsaType <- "fast" # Available methods are: src, srrc, morris, fast
-parmRange$hru$HRU_FR$Idx_1_1$low = 0.1
-parmRange$hru$HRU_FR$Idx_1_1$up = 0.3
+parmRange$hru$SLSUBBSN$Idx_1_1$low = 0.1
+parmRange$hru$SLSUBBSN$Idx_1_1$up = 0.3
 
 parmRange$mgt$NMGT$Idx_1_1$low = -0.01
 parmRange$mgt$NMGT$Idx_1_1$up = 0.2
@@ -29,6 +29,11 @@ parmRange$gw$GW_DELAY$Idx_1_1$up = 0.02
 # #
 # parmRange$rte$SPEX$Sub_1$low= -0.02 # CHCECK THIS FOR BUGS!
 # parmRange$rte$SPEX$Sub_1$up = 0.02
+
+# parmRange$rte$PRF$Sub_1$low = -0.02
+# parmRange$rte$PRF$Sub_1$up = 0.02
+
+
 #
 parmRange$bsn$P_UPDIS$low = -0.02
 parmRange$bsn$P_UPDIS$up = 0.02
@@ -49,7 +54,7 @@ A <- GSA$X
 
 ######################
 # Testing getParmValueFromFileLines (reads parm value from a single file)
-con = file("E:/Sensitivity_Projects/SWATSENS/example/TxtInOut/plant.dat")
+con = file("../model/TxtInOut/plant.dat")
 fileLines <- readLines(con)
 parmName <- "plant.OATS.USLE_C" #Parm name according to SWATSENS
 getParmValueFromFileLines(fileLines, parmName)
@@ -64,7 +69,7 @@ parmNames <- c("hru.HRU_FR.Idx_1_1", "hru.SLSUBBSN.Idx_1_1",
                   "bsn.P_UPDIS", "wwq.RHOQ"
                    )
 
-projectPath <- "E:/Sensitivity_Projects/SWATSENS/example/TxtInOut"
+projectPath <- "../model/TxtInOut"
 getParmValues(parmNames, projectPath)
 ######################
 #######

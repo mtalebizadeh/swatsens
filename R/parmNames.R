@@ -77,7 +77,9 @@ kParmName2FormatStringMap <- c(
   "NPERCO" = "%16.3f",
   "RSDCO" = "%16.3f")
 
-
-
+# Output parameter names in output.sub file:
+kOutputSubParmNames <- c("SUB", "GIS", "MON", "AREA", "PRECIP", "SNOMELT", "PET", "ET", "SW", "PERC", "SURQ",
+                         "GW_Q", "WYLD", "SYLD", "ORGN", "ORGP", "NSURQ", "SOLP", "SEDP", "LATNO3", "GWNO3",
+                         "CHOLA", "CBODU", "DOXQ", "TNO3", "QTILE", "TVAP")
 
 
