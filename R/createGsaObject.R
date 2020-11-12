@@ -159,7 +159,7 @@ getUncertaintyLimits <- function(parmRange, rangeType = "rel") {
 
   if (rangeType == "rel") {
     for (parmName in names(lowerLimits)) {
-      print(parmName)
+      # print(parmName)
       lowerLimits[parmName] <- (as.numeric(lowerLimits[parmName]) + 1) *
         getParmValues(parmName, parmRange$projectPath)
 

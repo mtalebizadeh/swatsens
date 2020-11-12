@@ -5,77 +5,111 @@ swatsens quick start manual
 Introduction
 ------------
 
-swatsens is a package in R for performing sensitivity and model performance analysis for the SWAT model.The package was primarily developed for USDA-ARS Grazinglands Research Laboratory.
+swatsens is a package in R for performing sensitivity and model performance analysis for the SWAT model.The package is part of land and water resources management studies at USDA-ARS Grazinglands Research Laboratory.
 
-Example folder
+How it works
 --------------
 
-An example folder containing an APEX project and other inputs is available for users to test the package. The rest of this manual provides details of implementing an SA project using the accompanying example folder which can be created through a call to:
+<p>
+1) swatsens automatically extracts SWAT model information from TextInOut folder.
+To achieve this, users are required to make a backup of TextInOut project (see "backUpTextInOutPath" in SA section) and provide its path along with other set of
+user-supplied inputs.
+</p>
+<p>
+2) After setting the inputs, "genParmRange" function with "backUpTextInOutPath" as
+its argument is called to generate a list containing empty ranges of SWAT model
+parameters. Using this generated list, user can set uncertainty range for different
+SWAT model parameters.
+</p>
+<p>
+3) Once, the range of parameter uncertainties are set, "createGsaObject" function
+is called to create a GSA list containing samples from the ranges of uncertain parameters and other sensitivity analysis (SA) settings.
+</p>
+<p>
+4) "runMonteCarlo" function is called to run Monte Carlo simulation using the generated samples and save the timeseries of different SWAT outputs,
+located inside SWATS's "output.sub" file, as well as a performance measure (current version of swatsens only supports "mean" as performance measure).
+</p>
+<p>
+At last, the program simply loops through performance measure files and SA coeeficients are calculated and save inside "gsa_output" folder.
+</p>
 
-``` r
-# Creating a copy of tutorial folder inside the working directory
-  parapex::getExampleFolder()
-```
 
 Steps for performing SA
 -----------------------
-
-After loading parapex and generating a copy of the example folder, the following four steps, described in the next sections should be followed for performing SA.
-
 ``` r
-# 1) Generating a list object with a predefined structure compatible to APEXSENSUN:
-     Input <- parapex::inputGen()
-
-# 2) Setting the required inputs (e.g. uncertainty boubds, SA method, sample size, ...)
-  #
-  # Setting uncertainty bounds:
-    Input$APEX_PARM$Root_growth_soil[1]=1.1
-    Input$APEX_PARM$Root_growth_soil[2]=1.20
-
-    Input$APEX_PARM$Soil_water_limit[1]=0
-    Input$APEX_PARM$Soil_water_limit[2]=1
-
-    Input$APEX_PARM$Soil_evap_coeff[1]=1.5
-    Input$APEX_PARM$Soil_evap_coeff[2]=2.5
-
-    Input$APEX_PARM$Soil_evap_plant_cover[1]=0
-    Input$APEX_PARM$Soil_evap_plant_cover[2]=0.5
-
-    Input$APEX_PARM$Runoff_CN_int_abs[1]=0.05
-    Input$APEX_PARM$Runoff_CN_int_abs[2]=0.4
-
-    Input$APEX_PARM$Max_rain_intercept[1]=0
-    Input$APEX_PARM$Max_rain_intercept[2]=15
-
-    Input$APEX_PARM$Rain_intercept_coeff[1]=0.05
-    Input$APEX_PARM$Rain_intercept_coeff[2]=0.3
-
-    Input$APEX_PARM$Microbial_top_soil_coeff[1]=0.1
-    Input$APEX_PARM$Microbial_top_soil_coeff[2]=1
-
-    Input$APEX_PARM$Microbial_decay_coeff[1]=0.5
-    Input$APEX_PARM$Microbial_decay_coeff[2]=1.5
-  
-  # SA method and sample size:
-    Input$GSA_Type <- "FAST99"
-    Input$sample_size = 1000
-
-# 3) Performing Monte Carlo simulation using the setting Input:
-     GSA <- parapex::MC4APEX(Input)
+# 1) Setting required inputs:
+     # original TextInout (used for reading SWAT parameters)
+     backUpTextInOutPath <- "D:/backUpTxtInOut"
     
-# 4) Calculation of performance matrix:
-     Input$func_type <- "MEAN"
-     perfMat <- parapex::perfMatrix(Input)
+     # TextInOut Folder (used for performing MC simulations)
+     textInOutPath <- "D:/TxtInOut"
      
-# 5) Calculation of sensitivity indices:
-     SA <- parapex::SA4APEX(GSA, perfMat)
+     # SWAT executable file inside name TextInOut folder
+     exe_fileName = "rev670_64rel.exe"
+    
+     # Path to output.sub file inside TextInOut folder
+     outputSubFile= "D:/TxtInOut/output.sub"
+
+     # Output folders where performance metric (i.e. mean), SA coeffs, and timeseries
+     # are stored inside pmfs, gsa_outputs, and subs are stored, respectively
+     pmfFolderPath = "D:/outputs/pmfs"
+     folder_path_GSA_Outputs <- "D:/outputs/gsa_output"
+     subbasinFolderPath = "D:/outputs/subs"
+    
+     # Beginning year of simulation as it appears inside "file.cio"
+     # Please make sure "IDAF" and "IDAL" values are set to 0 inside "file.cio"  
+     startDate="2003-01-01"
+     outputVars = c("PET", "PRECIP", "ORGN", "SYLD")
+     gsaType <- "src" # Available methods are: "src", "srrc", "morris", "fast"
+     n = 1000         # Number of generated samples
+
+# 2) Generating range of parametrs and setting relative uncertainty ranges
+     parmRange <- genParmRange(backUpTextInOutPath)
+     
+     parmRange$gw$GW_DELAY$Idx_1_1$low = -0.02 # i.e., lower uncertainty: default*(1 - 0.02)
+     parmRange$gw$GW_DELAY$Idx_1_1$up = 0.02 # i.e., upper uncertainty: default*(1 + 0.02)
+     
+     parmRange$hru$SLSUBBSN$Idx_1_1$low = 0.1
+     parmRange$hru$SLSUBBSN$Idx_1_1$up = 0.3
+
+     parmRange$bsn$P_UPDIS$low = -0.02
+     parmRange$bsn$P_UPDIS$up = 0.02
+  
+     parmRange$wwq$RHOQ$low = -0.2
+     parmRange$wwq$RHOQ$up = 0.2
+      
+     parmRange$plant$FRST$BIO_E$low = -0.2
+     parmRange$plant$FRST$BIO_E$up = 0.2
+     
+# 3) Create GSA object
+     GSA <- swatsens::createGsaObject(parmRange = parmRange,
+                       gsaType = gsaType,
+                       rangeType = "rel", n = n)
+
+# 4) Run Monte Carlo simulations and save model outputs and performance measure
+     swatsens::runMonteCarlo(parmDataFrame = GSA$X,
+              projectPath = textInOutPath,
+              outputSubFile= outputSubFile,
+              startDate=startDate,
+              skip=8,
+              outputVars = outputVars,
+              subbasinFolderPath = subbasinFolderPath,
+              pmfFolderPath = pmfFolderPath,
+              exe_fileName = exe_fileName)
+  
+# 5) Calculating SA coefficients for different variables inside "output.sub" file  
+  for (f in list.files(pmfFolderPath) ) {
+
+  y = read.table(paste(pmfFolderPath, "/", f, sep=""), header = TRUE)
+  SACoeffs <- swatsens::caclulateSACoeffs(GSA_Object = GSA,
+                                Y = y,
+                                GSA_Type = gsaType)
+  print(f)
+  write.table(SACoeffs,
+              paste(folder_path_GSA_Outputs,
+                    "/", "sub_",swatsens::getSubbasinNumberFromFileName(f),
+                    "_", names(y),
+                    ".txt", sep = ""),
+              sep = "\t")
+}
 ```
-
-APENDIX
--------
-
-This section provides 4 main tables containing the name of different parameters and their description.
-
-                                                                         |
-
-
