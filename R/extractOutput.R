@@ -1,8 +1,8 @@
-kOutputSubParmNames <- c("SUB", "GIS", "MON", "AREA", "PRECIP", "SNOMELT",
-                         "PET", "ET", "SW", "PERC", "SURQ",
-                         "GW_Q", "WYLD", "SYLD", "ORGN", "ORGP", "NSURQ",
-                         "SOLP", "SEDP", "LATNO3", "GWNO3",
-                         "CHOLA", "CBODU", "DOXQ", "TNO3", "QTILE", "TVAP")
+# kOutputSubParmNames <- c("SUB", "GIS", "MON", "AREA", "PRECIP", "SNOMELT",
+#                          "PET", "ET", "SW", "PERC", "SURQ",
+#                          "GW_Q", "WYLD", "SYLD", "ORGN", "ORGP", "NSURQ",
+#                          "SOLP", "SEDP", "LATNO3", "GWNO3",
+#                          "CHOLA", "CBODU", "DOXQ", "TNO3", "QTILE", "TVAP")
 
 getAllOutputSubNames <- function(outputSubFile,
                                  skip) {
@@ -115,7 +115,7 @@ extractOutput <- function(outputSubFile,
 
       # Appending simulated outputs to subbasin folder
       filePath = paste(subbasinFolderPath,
-                       paste("sub", "_", sub, '_', v, ".csv", sep=""),
+                       paste("/sub", "_", sub, '_', v, ".csv", sep=""),
                        sep = "")
       if (file.exists(filePath)) {
         write.table(outputVarDataTransposed, file = filePath ,append = TRUE,
@@ -129,10 +129,12 @@ extractOutput <- function(outputSubFile,
 
       # Calculate aggregate PMF (performance measure)
       pmfValue = mean(outputVarData[, v])
+      pmfValue = data.frame(v = pmfValue)
+      names(pmfValue) <- v
 
       # Appending PMF values to pmfs folder
       filePathPmf = paste(pmfFolderPath,
-                       paste("pmf", "_", sub, '_', v, ".csv", sep=""),
+                       paste("/pmf", "_", sub, '_', v, ".csv", sep=""),
                        sep = "")
       if (file.exists(filePathPmf)) {
         write.table(pmfValue, file = filePathPmf ,append = TRUE,
@@ -147,11 +149,4 @@ extractOutput <- function(outputSubFile,
     }
   }
 }
-
-
-
-
-
-
-
 

@@ -1,17 +1,17 @@
 
 runMonteCarlo <- function(parmDataFrame,
                           projectPath,
-                          outputSubFile="../model/TxtInOut/output.sub",
-                          startDate="2003-01-01",
-                          skip=8,
-                          outputVars = c("PET", "PRECIP", "ORGN", "SYLD"),
-                          subbasinFolderPath = "C:/Users/myAcerPC2019/Documents/SWATSENSE/outputs/subs/",
-                          pmfFolderPath = "C:/Users/myAcerPC2019/Documents/SWATSENSE/outputs/pmfs/",
-                          exe_fileName = "rev670_64rel.exe"
+                          outputSubFile,
+                          startDate,
+                          skip,
+                          outputVars,
+                          subbasinFolderPath,
+                          pmfFolderPath,
+                          exe_fileName
                           ) {
 
   n_row = nrow(parmDataFrame)
-  for (row_num in 1:5) {
+  for (row_num in 1:n_row) {
 
     # write parameters
     parmValues <- unlist(parmDataFrame[row_num,])

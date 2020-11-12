@@ -1,11 +1,10 @@
 Package: SWATSENS
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.0
+Version: 0.8.0
 Author: Mansour Talebizadeh 
-Maintainer: The package maintainer <mansour.talebizadeh@gmail.com>
+Maintainer: The package maintainer <mansour.talebizadeh@dataorbs.com>
 Description: Sensitivity analysis and model calibration for SWAT.
-    
 License: MIT
 Encoding: UTF-8
 LazyData: true
