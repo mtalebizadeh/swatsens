@@ -1,14 +1,28 @@
-swatsens quick start manual
+Important Notice
 ================
 
+<ul>
+  <li><strong><em>This repository has been archived and is no longer maintained.</em></strong></li>
+  <li><strong><em>The code is provided for historical reference and may contain unpatched or unknown vulnerabilities.</em></strong></li>
+  <li><strong><em>It should not be used in production systems.</em></strong></li>
+</ul>
 
-Introduction
-------------
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+## swatsens quick start manual
+
+
+### Introduction
 
 swatsens is a package in R for performing sensitivity and model performance analysis for the SWAT model.The package is part of land and water resources management studies at USDA-ARS Grazinglands Research Laboratory.
 
-How it works
---------------
+### How it works
+
 
 <p>
 1) swatsens automatically extracts SWAT model information from TextInOut folder.
@@ -34,8 +48,8 @@ At last, the program simply loops through performance measure files and SA coeef
 </p>
 
 
-Steps for performing SA
------------------------
+### Steps for performing SA
+
 ``` r
 # 1) Setting required inputs:
      # original TextInout (used for reading SWAT parameters)
